@@ -1,7 +1,7 @@
 import sys, os, getopt
 import math, random
 from colorama import Fore, Style, init
-
+import pickle
 class Game:
     def __init__(self, fpath:str = "./word_list.txt", gamelevel = 'normal', showAlphabet = False, countWrongGuess = False):
         self.score = 0
@@ -28,14 +28,24 @@ class Game:
         self.game_settings['show_alphabet'] = showAlphabet
         self.game_settings['countWrongGuess'] = countWrongGuess
         self.game_settings['level'] = 'normal' # hard or normal
-    
+        
+        self.version = 0.0
+        
+    def print_game_intro(self):
+        """
+        print_game_intro() displays game introduction and help
+        """
+        print("")
+        game.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
+        print("")
+         
     def print_game_statistics(self):
     
         # Some print settings
         colWidth = 10 
         tableWidth =  (colWidth * 3) + 5
         
-        
+        print('') 
         print('GAME STATISTICS'.center(tableWidth, '*'))
         rounds_won = 0
         rounds_played = 0
@@ -65,8 +75,7 @@ class Game:
         
         print(''.center(tableWidth, '*'))        
         return
-        
-    
+          
     @staticmethod    
     def load_words(fpath):
         if not os.path.isfile(fpath):
@@ -98,8 +107,7 @@ class Game:
             
        
         return words 
-    
-    
+      
     @staticmethod
     def check_word(guess, curr_word):
         """
@@ -229,8 +237,6 @@ class Game:
             if sum(status) == len(status):
                 break
         
-        
-        
         self.print_wordle(curr_guess, status)
         if sum(status) == len(status):
             print('Win!')
@@ -251,25 +257,70 @@ class Game:
         # Update rounds counter
         self.completed_rounds += 1
         return
-          
-
+      
+def load_game(fPath):
+    
+    if os.path.exists(fPath):
+        with open(fPath , 'rb') as f:
+            game, meta_data = pickle.load(f)
+            if not isinstance(game, Game):
+                game = None
+            else:
+                inp = ''
+                while(inp not in ['y', 'n']):
+                    inp = input("Continue previous session? (y/n) ").lower()
+                if inp == 'n':
+                    game = None
+    return game 
+ 
+def save_game(fPath, game):
+    try:
+        with open(fPath, 'wb') as f:
+            meta_data = {}
+            meta_data['game_version'] = game.version
+        
+            pickle.dump([game, meta_data], f, protocol=2)
+        print('Session data saved successfully!')
+    except:
+        print('Session data could not be saved!')
+        quit()
+ 
 if __name__ == "__main__":
     init(convert=True) # For color purpose
     
     args = sys.argv[1:]
     
-    game = Game()
-   
-    game.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
-    print("")
+    game = load_game('savefile.dat')
     
-    continueRound = True
-    while(continueRound):
+
+    if game == None:
+        showAlphabet = False 
+        for i in range(len(args)):
+            if args[i] == '-k':
+                showAlphabet = True 
+        game = Game(showAlphabet = showAlphabet)
+   
+        game.print_game_intro()
+    
+    # TODO: Build handling of command arguments
+    # TODO: Win / Loss message variations
+    # TODO: Hard mode implementation - Not needed
+    # TODO: User registration - replaced with load state
+    
+    
+      
+    continueRound = 'y'
+    while(continueRound.lower() == 'y'):
         game.run_round()
-        continueRound = input("Continue? (Y/N)").lower() == "y"
+        continueRound = ''
+        while(continueRound not in ['y', 'n']):
+            continueRound = input("Continue? (y/n) ")
+        
     
     # print statistics
     
     game.print_game_statistics()
     
+    
+
         
