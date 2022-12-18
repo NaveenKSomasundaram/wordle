@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys, os, getopt
 import math, random
 from colorama import Fore, Style, init
@@ -152,6 +153,9 @@ class Game:
         return status
     
     def print_wordle(self, word, status):
+        """
+        Function to print word in the wordle format where the letter color is determined by status.
+        """
         word = word.upper()
         colors = {0: '\x1b[1;37;43m', 1: '\x1b[1;37;42m', -1 : '\x1b[1;37;40m'}
         for i in range(len(word)):
@@ -165,21 +169,47 @@ class Game:
         return
     
     def print_alphabet_status(self, status):
+        """
+        Function to print alphabet list a-z differentiated by status value
+        status[i] represents the status of chr(97 + i)
+        i.e. status[0] represents a, status[1] represents b and so on.
+        status[i] = -1 implies chr(97 + i) is guessed and not in word
+        status[i] =  0 implies chr(97 + i) is not guessed yet
+        status[i] = +1 implies chr(97 + i) is guessed and present in word
+        """
         if not self.game_settings['show_alphabet']:
             return
         for i in range(len(status)):
-            if status[i] == 0:
-                print(self.colors['default'] + ' ' + chr(i + 97) + ' ' + self.colors['default'], end = "")
-                #print(self.colors['no_match'] + ' ' + chr(i + 97) + ' ' + self.colors['no_match'], end = "")  
-            elif status[i] == 1:
-                #print(self.colors['exact_match'] + ' ' + chr(i + 97) + ' ' + self.colors['default'], end = "")
+            # not guesed show lowercase
+            if status[i] == 0: 
+                print(self.colors['default'] + ' ' + chr(i + 97) + ' ' + self.colors['default'], end = "") 
+            # gussed and present in word - show lowercase within []
+            elif status[i] == 1: 
                 print(self.colors['default'] + '[' + chr(i + 97) + ']' + self.colors['default'], end = "")                
+            # guessed and not present - don't show letter
             else:
                 print(self.colors['default'] + '   ' + self.colors['default'], end = "")
         print(self.colors['default'] + "  ", end = "")    
         return
-        
+    
+    def round_end_message(self, num_guesses):
+        """
+        Returns string for round end message depending on number of guesses
+        """
+        if num_guesses > self.guess_limit:
+            return random.choice(["Uh-oh! It was ", ":| ", "... ", "Gotcha! The word is "]) 
+        if num_guesses == 1:
+            return random.choice(["GODLIKE!", "SAVAGE!", "Feeling lucky?!"])
+        if num_guesses in [2, 3]:
+            return random.choice(["Excellent!", "Superb!", "Impeccable!", "G3N1U5"])
+        if num_guesses == [4, 5]:
+            return random.choice(["Way to go!", "Good job!", "Impressive"])
+        else:
+            return random.choice(["Phew!", ":)", "Not bad!", "You made it(eventually)", "Living dangerously?!"])
     def run_round(self):
+        """
+        Function to run a worlde round
+        """
         if len(self.unused_words) == 0:
             print("Word list completed!")
             quit()
@@ -239,16 +269,16 @@ class Game:
         
         self.print_wordle(curr_guess, status)
         if sum(status) == len(status):
-            print('Win!')
+            print(self.round_end_message(len(guesses)))
             self.score += 1
             self.guess_statistics[i + 1] += 1
             self.streak['current'] += 1
             self.streak['best'] = max(self.streak['best'], self.streak['current'])
         else:
             status = self.check_word(curr_word, curr_word)
-            print("")
-            self.print_wordle(curr_word, status)
-            print('Loss!')
+            #print("")
+            #self.print_wordle(curr_word, status)
+            print(self.round_end_message(len(guesses) + 1) + curr_word)
             self.guess_statistics[i + 2] += 1
             self.streak['current'] = 0
 
@@ -288,18 +318,22 @@ def save_game(fPath, game):
 if __name__ == "__main__":
     init(convert=True) # For color purpose
     
+    # Argument parse
     args = sys.argv[1:]
+    showAlphabet = False 
+    for i in range(len(args)):
+        if args[i] == '-k':
+            showAlphabet = True 
     
-    game = load_game('savefile.dat')
-    
+    # Load previous state if possible
+    savedfPath = 'savefile.dat'
+    game = load_game(savedfPath)
+    # Use current settings on the saved state
+    game.game_settings['show_alphabet'] = showAlphabet
+    game.print_game_intro()
 
     if game == None:
-        showAlphabet = False 
-        for i in range(len(args)):
-            if args[i] == '-k':
-                showAlphabet = True 
         game = Game(showAlphabet = showAlphabet)
-   
         game.print_game_intro()
     
     # TODO: Build handling of command arguments
@@ -318,9 +352,10 @@ if __name__ == "__main__":
         
     
     # print statistics
-    
     game.print_game_statistics()
     
+    # Save game
+    save_game(savedfPath, game)
     
 
         
