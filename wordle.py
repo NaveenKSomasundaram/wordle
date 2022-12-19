@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, getopt
+import sys, os
 import math, random
 from colorama import Fore, Style, init
 import pickle
@@ -51,7 +51,7 @@ class Game:
         print("")
         print("A and E are in the right position, P is in word but in the wrong position")
         print("")
-        print("Use command line argumetn -k to display keyboard")
+        print("Use command line argument -k to display keyboard")
         print("Example ")
         print("If word is PLANE and guess is PILLS the keyboard shows")
         print("a b c d e f g h   j k [l] m n o [p] q r  t u v w x y z")
@@ -373,7 +373,6 @@ if __name__ == "__main__":
     # TODO: Win / Loss message variations
     # TODO: Hard mode implementation - Not needed
     # TODO: User registration - replaced with load state
-    
     
       
     continueRound = 'y'
