@@ -4,9 +4,9 @@ import math, random
 from colorama import Fore, Style, init
 import pickle
 class Game:
-    def __init__(self, fpath:str = "./word_list.txt", gamelevel = 'normal', showAlphabet = False, countWrongGuess = False):
+    def __init__(self, fpath:str = "word_list.txt", gamelevel = 'normal', showAlphabet = False, countWrongGuess = False):
         self.score = 0
-        self.word_list = self.load_words(fpath)
+        self.word_list = self.load_words(resource_path(fpath))
         self.unused_words = list(range(len(self.word_list))) 
         self.guess_limit = 6
         self.num_letters = 5
@@ -36,10 +36,29 @@ class Game:
         """
         print_game_intro() displays game introduction and help
         """
+        rowWidth = 100
         print("")
         game.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
         print("")
-         
+        print(''.center(rowWidth, '-'))
+        print("Guess the Word in " + str(self.guess_limit) + " tries.")
+        print(" - Each guess must be a valid 5-letter word.") 
+        print(" - Color of guess tiles will change to show how close the guess is to the word.") 
+        
+        print("Example ")
+        print("If word is PLANE and guess is SPADE then it appears as")
+        self.print_wordle("SPADE", [-1, 0, 1, -1, 1])
+        print("")
+        print("A and E are in the right position, P is in word but in the wrong position")
+        print("")
+        print("Use command line argumetn -k to display keyboard")
+        print("Example ")
+        print("If word is PLANE and guess is PILLS the keyboard shows")
+        print("a b c d e f g h   j k [l] m n o [p] q r  t u v w x y z")
+        print("i and s are removed as they are not present in word")
+        print("l and p are shown in [] as they are present in word")
+        print(''.center(rowWidth, '-'))
+        
     def print_game_statistics(self):
     
         # Some print settings
@@ -81,20 +100,20 @@ class Game:
     def load_words(fpath):
         if not os.path.isfile(fpath):
             print('Error. Provide a valid file path for word list.')
-            quit()
+            sys.exit()
         try:
             f = open(fpath)
             words = f.read().split('\n')
             words.pop(-1)
         except:
             print('Unable to load file ' + fpath)
-            quit()
+            sys.exit()
         
         #self.word_list = words 
         
         if len(words) == 0:
             print("Word list is empty!")
-            quit()
+            sys.exit()
         
         # TODO: check of words
         checked_words = []
@@ -123,7 +142,7 @@ class Game:
         """
         if len(curr_word) != len(guess):
             print("length of guess and word to compare is not same!")
-            quit()
+            sys.exit()
         
         # Convert to lower case for comparison
         curr_word = curr_word.lower()
@@ -205,14 +224,15 @@ class Game:
         if num_guesses == [4, 5]:
             return random.choice(["Way to go!", "Good job!", "Impressive"])
         else:
-            return random.choice(["Phew!", ":)", "Not bad!", "You made it(eventually)", "Living dangerously?!"])
+            return random.choice(["Phew!", ":)", "You made it!", "Living dangerously?!"])
+    
     def run_round(self):
         """
         Function to run a worlde round
         """
         if len(self.unused_words) == 0:
             print("Word list completed!")
-            quit()
+            sys.exit()
             
         ind = random.randint(0, len(self.unused_words))
         self.unused_words.pop(ind)
@@ -301,6 +321,8 @@ def load_game(fPath):
                     inp = input("Continue previous session? (y/n) ").lower()
                 if inp == 'n':
                     game = None
+    else:
+        game = None
     return game 
  
 def save_game(fPath, game):
@@ -313,7 +335,18 @@ def save_game(fPath, game):
         print('Session data saved successfully!')
     except:
         print('Session data could not be saved!')
-        quit()
+        sys.exit()
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    # From stack exchange https://stackoverflow.com/questions/51060894/adding-a-data-file-in-pyinstaller-using-the-onefile-option
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
  
 if __name__ == "__main__":
     init(convert=True) # For color purpose
@@ -328,14 +361,14 @@ if __name__ == "__main__":
     # Load previous state if possible
     savedfPath = 'savefile.dat'
     game = load_game(savedfPath)
+    
+    if game == None:
+        game = Game(showAlphabet = showAlphabet)
+    
     # Use current settings on the saved state
     game.game_settings['show_alphabet'] = showAlphabet
     game.print_game_intro()
 
-    if game == None:
-        game = Game(showAlphabet = showAlphabet)
-        game.print_game_intro()
-    
     # TODO: Build handling of command arguments
     # TODO: Win / Loss message variations
     # TODO: Hard mode implementation - Not needed
@@ -357,5 +390,6 @@ if __name__ == "__main__":
     # Save game
     save_game(savedfPath, game)
     
-
+    while(input("Press any key to exit")):
+        quit
         
