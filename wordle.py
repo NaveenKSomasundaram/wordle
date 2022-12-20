@@ -252,20 +252,17 @@ class Game:
             self.print_alphabet_status(alphabet_status)
             
             curr_guess = input('Guess ' + str(i + 1) + ':').lower()    
-            while(curr_guess not in self.word_list):
+            while(curr_guess not in self.word_list or curr_guess in guesses):
                 self.print_wordle("-" * self.num_letters, [-1] * self.num_letters)
                 self.print_alphabet_status(alphabet_status)
-                print('Invalid word. Try a new word!')
-                self.print_wordle("-" * self.num_letters, [-1] * self.num_letters)
-                if self.game_settings['show_alphabet']:
-                    self.print_alphabet_status(alphabet_status)
+                # Display the error message
+                if curr_guess not in self.word_list:
+                    print('Invalid word. Try a new word!')
+                elif curr_guess in guesses:
+                    print('Already guessed. Try a new word!')
+                else:
+                    pass 
                 
-                curr_guess = input('Guess ' + str(i + 1) + ':').lower()
-                
-            while(curr_guess in guesses):
-                self.print_wordle("-" * self.num_letters, [-1] * self.num_letters)
-                self.print_alphabet_status(alphabet_status)
-                print('Already guessed word. Try a new word!')
                 self.print_wordle("-" * self.num_letters, [-1] * self.num_letters)
                 if self.game_settings['show_alphabet']:
                     self.print_alphabet_status(alphabet_status)
@@ -308,7 +305,9 @@ class Game:
         self.completed_rounds += 1
         return
       
-def load_game(fPath):
+def load_game(relPath):
+    base_path = os.getenv('APPDATA')
+    fPath = os.path.join(base_path, relPath)
     
     if os.path.exists(fPath):
         with open(fPath , 'rb') as f:
@@ -320,12 +319,24 @@ def load_game(fPath):
                 while(inp not in ['y', 'n']):
                     inp = input("Continue previous session? (y/n) ").lower()
                 if inp == 'n':
+                    # Replace session data 
                     game = None
+                    with open(fPath, 'wb') as f:
+                        pickle.dump([game, "Empty Session File"], f, protocol=2)
     else:
         game = None
     return game 
  
 def save_game(fPath, game):
+    # Do not save if user doesn't want to
+    inp = ''
+    while(inp not in ['y', 'n']):
+        inp = input("Save current session? (y/n) ").lower()
+    if inp == 'n':
+        return
+        
+    base_path = os.getenv('APPDATA')
+    fPath = os.path.join(base_path, fPath)
     try:
         with open(fPath, 'wb') as f:
             meta_data = {}
@@ -359,7 +370,7 @@ if __name__ == "__main__":
             showAlphabet = True 
     
     # Load previous state if possible
-    savedfPath = 'savefile.dat'
+    savedfPath = 'wordle_session.dat'
     game = load_game(savedfPath)
     
     if game == None:
@@ -389,6 +400,6 @@ if __name__ == "__main__":
     # Save game
     save_game(savedfPath, game)
     
-    while(input("Press any key to exit")):
-        quit
+    input("hit ENTER to exit")
+        
         
