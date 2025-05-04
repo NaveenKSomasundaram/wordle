@@ -383,11 +383,6 @@ def main(args):
     game.game_settings['show_alphabet'] = show_alphabet
     game.print_game_intro()
 
-    # TODO: Build handling of command arguments
-    # TODO: Win / Loss message variations
-    # TODO: Hard mode implementation - Not needed
-    # TODO: User registration - replaced with load state
-    
     contunue_round = 'y'
     while(contunue_round.lower() == 'y'):
         game.run_round()
