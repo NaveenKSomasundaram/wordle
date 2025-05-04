@@ -368,11 +368,11 @@ if __name__ == "__main__":
     
     # Argument parse
     args = sys.argv[1:]
-    showAlphabet = False 
-    for i in range(len(args)):
-        if args[i] == '-k':
-            showAlphabet = True 
-    
+    showAlphabet = False
+
+    if '-k' in args:
+        showAlphabet = True 
+
     # Load previous state if possible
     savedfPath = 'wordle_session.dat'
     game = load_game(savedfPath)
