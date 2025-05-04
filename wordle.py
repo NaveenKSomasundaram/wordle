@@ -91,11 +91,11 @@ class Game:
         row_label_width = math.ceil(math.log10(self.guess_limit + 1) + 2)
         max_bars = table_width - 2 * row_label_width 
         for i in range(1, self.guess_limit + 2):
-            numBars = math.ceil(max_bars * (self.guess_statistics[i]/self.guess_statistics[min_max_guess]))
-            barColor = self.colors['exact_match'] if (i == min_max_guess) else self.colors['no_match']
+            num_bars = math.ceil(max_bars * (self.guess_statistics[i]/self.guess_statistics[min_max_guess]))
+            bar_color = self.colors['exact_match'] if (i == min_max_guess) else self.colors['no_match']
             
-            rowLabel = (str(i) + '+' * (i == (self.guess_limit + 1))).ljust(row_label_width)
-            print(rowLabel + barColor +  ' '  * numBars  + self.colors['default']  + str(self.guess_statistics[i]))
+            row_label = (str(i) + '+' * (i == (self.guess_limit + 1))).ljust(row_label_width)
+            print(row_label + bar_color +  ' '  * num_bars  + self.colors['default']  + str(self.guess_statistics[i]))
         
         print(''.center(table_width, '*'))        
         return
@@ -106,9 +106,9 @@ class Game:
             print('Error. Provide a valid file path for word list.')
             sys.exit()
         try:
-            f = open(fpath)
-            words = f.read().split('\n')
-            words.pop(-1)
+            with open(fpath) as f:
+                words = f.read().split('\n')
+                words.pop(-1)
         except:
             print('Unable to load file ' + fpath)
             sys.exit()
@@ -180,14 +180,13 @@ class Game:
         Function to print word in the wordle format where the letter color is determined by status.
         """
         word = word.upper()
-        colors = {0: '\x1b[1;37;43m', 1: '\x1b[1;37;42m', -1 : '\x1b[1;37;40m'}
-        for i in range(len(word)):
+        for i, letter in enumerate(word):
             if status[i] == 0:
-                print(self.colors['match'] + ' ' + word[i] + ' ' + self.colors['default'], end = "")  
+                print(self.colors['match'] + ' ' + letter + ' ' + self.colors['default'], end = "")  
             elif status[i] == 1:
-                print(self.colors['exact_match'] + ' ' + word[i] + ' ' + self.colors['default'], end = "") 
+                print(self.colors['exact_match'] + ' ' + letter + ' ' + self.colors['default'], end = "") 
             else:
-                print(self.colors['no_match'] + ' ' + word[i] + ' ' + self.colors['default'], end = "") 
+                print(self.colors['no_match'] + ' ' + letter + ' ' + self.colors['default'], end = "") 
         print(" ", end = "")   
         return
     
