@@ -67,10 +67,10 @@ class Game:
     
         # Some print settings
         col_width = 10 
-        tableWidth =  (col_width * 3) + 5
+        table_width =  (col_width * 3) + 5
         
         print('') 
-        print('GAME STATISTICS'.center(tableWidth, '*'))
+        print('GAME STATISTICS'.center(table_width, '*'))
         rounds_won = 0
         rounds_played = 0
         min_max_guess = 1
@@ -87,17 +87,17 @@ class Game:
         print(str(rounds_played).center(col_width) + str(win_percentage).center(col_width) + str(self.streak['best']).center(col_width))
         
         print('')
-        print('Guess Distribution'.center(tableWidth))
-        rowLabelWidth = math.ceil(math.log10(self.guess_limit + 1) + 2)
-        maxBars = tableWidth - 2 * rowLabelWidth 
+        print('Guess Distribution'.center(table_width))
+        row_label_width = math.ceil(math.log10(self.guess_limit + 1) + 2)
+        max_bars = table_width - 2 * row_label_width 
         for i in range(1, self.guess_limit + 2):
-            numBars = math.ceil(maxBars * (self.guess_statistics[i]/self.guess_statistics[min_max_guess]))
+            numBars = math.ceil(max_bars * (self.guess_statistics[i]/self.guess_statistics[min_max_guess]))
             barColor = self.colors['exact_match'] if (i == min_max_guess) else self.colors['no_match']
             
-            rowLabel = (str(i) + '+' * (i == (self.guess_limit + 1))).ljust(rowLabelWidth)
+            rowLabel = (str(i) + '+' * (i == (self.guess_limit + 1))).ljust(row_label_width)
             print(rowLabel + barColor +  ' '  * numBars  + self.colors['default']  + str(self.guess_statistics[i]))
         
-        print(''.center(tableWidth, '*'))        
+        print(''.center(table_width, '*'))        
         return
           
     @staticmethod    
@@ -378,7 +378,7 @@ if __name__ == "__main__":
     game = load_game(savedfPath)
     
     if game == None:
-        game = Game(showAlphabet = showAlphabet)
+        game = Game(show_alphabet = showAlphabet)
     
     # Use current settings on the saved state
     game.game_settings['show_alphabet'] = showAlphabet
