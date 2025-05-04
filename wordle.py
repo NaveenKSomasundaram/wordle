@@ -8,17 +8,20 @@ import pickle
 from colorama import init
 
 class Game:
-    def __init__(self, fpath:str = "word_list.txt", gamelevel = 'normal', show_alphabet = False, count_wrong_guess = False):
+    def __init__(self, fpath:str = "word_list.txt",
+                 gamelevel = 'normal',
+                 show_alphabet = False,
+                 count_wrong_guess = False):
         self.score = 0
         self.word_list = self.load_words(resource_path(fpath))
-        self.unused_words = list(range(len(self.word_list))) 
+        self.unused_words = list(range(len(self.word_list)))
         self.guess_limit = 6
         self.num_letters = 5
         self.completed_rounds = 0
         self.guess_statistics = {}
         for i in range(1, self.guess_limit + 2):
             self.guess_statistics[i] = 0 #random.randint(0, 50)
-            
+
         self.colors = {}
         self.colors['match'] = '\x1b[1;37;43m'
         self.colors['exact_match'] = '\x1b[1;37;42m'
@@ -28,14 +31,14 @@ class Game:
         self.streak = {}
         self.streak['current'] = 0
         self.streak['best'] = 0
-        
+
         self.game_settings = {}
         self.game_settings['show_alphabet'] = show_alphabet
         self.game_settings['countWrongGuess'] = count_wrong_guess
         self.game_settings['level'] = 'normal' # hard or normal
-        
+
         self.version = 0.0
-        
+
     def print_game_intro(self):
         """
         print_game_intro() displays game introduction and help
@@ -46,9 +49,9 @@ class Game:
         print("")
         print(''.center(row_width, '-'))
         print("Guess the Word in " + str(self.guess_limit) + " tries.")
-        print(" - Each guess must be a valid 5-letter word.") 
-        print(" - Color of guess tiles will change to show how close the guess is to the word.") 
-        
+        print(" - Each guess must be a valid 5-letter word.")
+        print(" - Color of guess tiles will change to show how close the guess is to the word.")
+
         print("Example ")
         print("If word is PLANE and guess is SPADE then it appears as")
         self.print_wordle("SPADE", [-1, 0, 1, -1, 1])
@@ -62,16 +65,16 @@ class Game:
         print("i and s are removed as they are not present in word")
         print("l and p are shown in [] as they are present in word")
         print(''.center(row_width, '-'))
-        
+
     def print_game_statistics(self):
         """
         Print game statistics.
         """
         # Some print settings
-        col_width = 10 
+        col_width = 10
         table_width =  (col_width * 3) + 5
-        
-        print('') 
+
+        print('')
         print('GAME STATISTICS'.center(table_width, '*'))
         rounds_won = 0
         rounds_played = 0
@@ -82,26 +85,26 @@ class Game:
                 rounds_won += self.guess_statistics[i]
             if self.guess_statistics[i] > self.guess_statistics[min_max_guess]:
                 min_max_guess = i
-        
-        
+
+
         print('Played'.center(col_width) + 'Win %'.center(col_width) +  'Max Streak'.center(col_width))
         win_percentage = math.ceil(100 * (rounds_won / rounds_played))
         print(str(rounds_played).center(col_width) + str(win_percentage).center(col_width) + str(self.streak['best']).center(col_width))
-        
+
         print('')
         print('Guess Distribution'.center(table_width))
         row_label_width = math.ceil(math.log10(self.guess_limit + 1) + 2)
-        max_bars = table_width - 2 * row_label_width 
+        max_bars = table_width - 2 * row_label_width
         for i in range(1, self.guess_limit + 2):
             num_bars = math.ceil(max_bars * (self.guess_statistics[i]/self.guess_statistics[min_max_guess]))
             bar_color = self.colors['exact_match'] if (i == min_max_guess) else self.colors['no_match']
-            
+
             row_label = (str(i) + '+' * (i == (self.guess_limit + 1))).ljust(row_label_width)
             print(row_label + bar_color +  ' '  * num_bars  + self.colors['default']  + str(self.guess_statistics[i]))
-        
-        print(''.center(table_width, '*'))        
-          
-    @staticmethod    
+
+        print(''.center(table_width, '*'))
+
+    @staticmethod
     def load_words(fpath):
         if not os.path.isfile(fpath):
             print('Error. Provide a valid file path for word list.')
@@ -113,13 +116,13 @@ class Game:
         except:
             print('Unable to load file ' + fpath)
             sys.exit()
-        
-        #self.word_list = words 
-        
+
+        #self.word_list = words
+
         if len(words) == 0:
             print("Word list is empty!")
             sys.exit()
-        
+
         # TODO: check of words
         checked_words = []
         for w in words:
@@ -129,32 +132,32 @@ class Game:
                         checked_words.append(w)
                 else:
                     checked_words.append(w)
-            
-       
-        return words 
-      
+
+
+        return words
+
     @staticmethod
     def check_word(guess, curr_word):
         """
             check_word checks the guess against curr_word and returns status array.
-            status is an array of length len(guess). 
+            status is an array of length len(guess).
             status[i] = 1 if guess[i] is present in curr_word at the same location
             status[i] = 0 if guess[i] is present in curr_word
-            status[i] = -1 if guess[i] is not present in curr_word 
-            
+            status[i] = -1 if guess[i] is not present in curr_word
+
             Note:
-                Look up wordle to see how status handles clashes 
+                Look up wordle to see how status handles clashes
         """
         if len(curr_word) != len(guess):
             print("length of guess and word to compare is not same!")
             sys.exit()
-        
+
         # Convert to lower case for comparison
         curr_word = curr_word.lower()
         guess = guess.lower()
-        
+
         n = len(curr_word)
-        
+
         status = [-1] * n
         for i in range(n):
             if curr_word[i] == guess[i]:
@@ -164,18 +167,18 @@ class Game:
             # Skip if letter is already found
             if status[i] == 1:
                 continue
-                
+
             for j in range(n):
                 # Skip if letter is already used
                 if status[j] != -1:
                     continue
                 # Set to 0 if letter found in guess
                 if curr_word[i] == guess[j]:
-                    status[j] = 0 
-                    break 
-                 
+                    status[j] = 0
+                    break
+
         return status
-    
+
     def print_wordle(self, word, status):
         """
         Function to print word in the wordle format where the letter color is determined by status.
@@ -183,15 +186,15 @@ class Game:
         word = word.upper()
         for i, letter in enumerate(word):
             if status[i] == 0:
-                print(self.colors['match'] + ' ' + letter + ' ' + self.colors['default'], end = "")  
+                print(self.colors['match'] + ' ' + letter + ' ' + self.colors['default'], end = "")
             elif status[i] == 1:
-                print(self.colors['exact_match'] + ' ' + letter + ' ' + self.colors['default'], end = "") 
+                print(self.colors['exact_match'] + ' ' + letter + ' ' + self.colors['default'], end = "")
             else:
-                print(self.colors['no_match'] + ' ' + letter + ' ' + self.colors['default'], end = "") 
-        print(" ", end = "")   
-        
+                print(self.colors['no_match'] + ' ' + letter + ' ' + self.colors['default'], end = "")
+        print(" ", end = "")
 
-    
+
+
     def print_alphabet_status(self, status):
         """
         Function to print alphabet list a-z differentiated by status value
@@ -205,32 +208,32 @@ class Game:
             return
         for i in range(len(status)):
             # not guesed show lowercase
-            if status[i] == 0: 
-                print(self.colors['default'] + ' ' + chr(i + 97) + ' ' + self.colors['default'], end = "") 
+            if status[i] == 0:
+                print(self.colors['default'] + ' ' + chr(i + 97) + ' ' + self.colors['default'], end = "")
             # gussed and present in word - show lowercase within []
-            elif status[i] == 1: 
-                print(self.colors['default'] + '[' + chr(i + 97) + ']' + self.colors['default'], end = "")                
+            elif status[i] == 1:
+                print(self.colors['default'] + '[' + chr(i + 97) + ']' + self.colors['default'], end = "")
             # guessed and not present - don't show letter
             else:
                 print(self.colors['default'] + '   ' + self.colors['default'], end = "")
-        print(self.colors['default'] + "  ", end = "")    
+        print(self.colors['default'] + "  ", end = "")
         return
-    
+
     def round_end_message(self, num_guesses):
         """
         Returns string for round end message depending on number of guesses
         """
         if num_guesses > self.guess_limit:
-            return random.choice(["Uh-oh! It was ", ":| ", "... ", "Gotcha! The word is "]) 
+            return random.choice(["Uh-oh! It was ", ":| ", "... ", "Gotcha! The word is "])
         if num_guesses == 1:
             return random.choice(["GODLIKE!", "SAVAGE!", "Feeling lucky?!"])
         if num_guesses in [2, 3]:
             return random.choice(["Excellent!", "Superb!", "Impeccable!", "G3N1U5"])
         if num_guesses == [4, 5]:
             return random.choice(["Way to go!", "Good job!", "Impressive"])
-       
+
         return random.choice(["Phew!", ":)", "You made it!", "Living dangerously?!"])
-    
+
     def run_round(self):
         """
         Function to run a worlde round
@@ -238,7 +241,7 @@ class Game:
         if len(self.unused_words) == 0:
             print("Word list completed!")
             sys.exit()
-            
+
         ind = random.randint(0, len(self.unused_words))
         self.unused_words.pop(ind)
         curr_word = self.word_list[ind]
@@ -246,17 +249,17 @@ class Game:
         guesses = []
         alphabet_status = [0] * 26
         status = self.check_word(curr_guess, curr_word)
-        
+
         print(f'\nROUND #{self.completed_rounds + 1}')
-        
+
         # Get guesses from user
         # i is the guess number
         for i in range(self.guess_limit):
-            
+
             self.print_wordle(curr_guess, status)
             self.print_alphabet_status(alphabet_status)
-            
-            curr_guess = input('Guess ' + str(i + 1) + ':').lower()    
+
+            curr_guess = input('Guess ' + str(i + 1) + ':').lower()
             while(curr_guess not in self.word_list or curr_guess in guesses):
                 self.print_wordle("-" * self.num_letters, [-1] * self.num_letters)
                 self.print_alphabet_status(alphabet_status)
@@ -266,29 +269,29 @@ class Game:
                 elif curr_guess in guesses:
                     print('Already guessed. Try a new word!')
                 else:
-                    pass 
-                
+                    pass
+
                 self.print_wordle("-" * self.num_letters, [-1] * self.num_letters)
                 if self.game_settings['show_alphabet']:
                     self.print_alphabet_status(alphabet_status)
-                
+
                 curr_guess = input('Guess ' + str(i + 1) + ':').lower()
-            
+
             status = self.check_word(curr_guess, curr_word)
-            
+
             for jj in range(len(status)):
                 if (alphabet_status[ord(curr_guess[jj]) - ord('a')]) != 1:
                     alphabet_status[ord(curr_guess[jj]) - ord('a')] = -1 if status[jj] == -1 else 1
-                    
-                    
-            
+
+
+
             # Store guess in guesses
             guesses.append(curr_guess)
-            
+
             # Exit if word is guessed
             if sum(status) == len(status):
                 break
-        
+
         self.print_wordle(curr_guess, status)
         if sum(status) == len(status):
             print(self.round_end_message(len(guesses)))
@@ -305,14 +308,14 @@ class Game:
             self.streak['current'] = 0
 
         print('\nSCORE:', self.score)
-        
+
         # Update rounds counter
         self.completed_rounds += 1
-      
+
 def load_game(rel_path):
     base_path = os.getenv('APPDATA')
     file_path = os.path.join(base_path, rel_path)
-    
+
     if os.path.exists(file_path):
         with open(file_path , 'rb') as f:
             game, meta_data = pickle.load(f)
@@ -323,14 +326,14 @@ def load_game(rel_path):
                 while(inp not in ['y', 'n']):
                     inp = input("Continue previous session? (y/n) ").lower()
                 if inp == 'n':
-                    # Replace session data 
+                    # Replace session data
                     game = None
                     with open(file_path, 'wb') as f:
                         pickle.dump([game, "Empty Session File"], f, protocol=2)
     else:
         game = None
-    return game 
- 
+    return game
+
 def save_game(file_path , game):
     # Do not save if user doesn't want to
     inp = ''
@@ -338,14 +341,14 @@ def save_game(file_path , game):
         inp = input("Save current session? (y/n) ").lower()
     if inp == 'n':
         return
-        
+
     base_path = os.getenv('APPDATA')
     file_path = os.path.join(base_path, file_path)
     try:
         with open(file_path, 'wb') as f:
             meta_data = {}
             meta_data['game_version'] = game.version
-        
+
             pickle.dump([game, meta_data], f, protocol=2)
         print('Session data saved successfully!')
     except:
@@ -353,8 +356,11 @@ def save_game(file_path , game):
         sys.exit()
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    # From stack exchange https://stackoverflow.com/questions/51060894/adding-a-data-file-in-pyinstaller-using-the-onefile-option
+    """
+     Get absolute path to resource, works for dev and for PyInstaller
+     From stack exchange
+     https://stackoverflow.com/questions/51060894/adding-a-data-file-in-pyinstaller-using-the-onefile-option
+    """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
@@ -362,7 +368,7 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
- 
+
 def main(args):
     """
     Run game session
@@ -370,15 +376,15 @@ def main(args):
     show_alphabet = False
 
     if '-k' in args:
-        show_alphabet = True 
+        show_alphabet = True
 
     # Load previous state if possible
     saved_session_path = 'wordle_session.dat'
     game = load_game(saved_session_path)
-    
+
     if game is None:
         game = Game(show_alphabet = show_alphabet)
-    
+
     # Use current settings on the saved state
     game.game_settings['show_alphabet'] = show_alphabet
     game.print_game_intro()
@@ -389,20 +395,20 @@ def main(args):
         contunue_round = ''
         while(contunue_round not in ['y', 'n']):
             contunue_round = input("Continue? (y/n) ")
-        
-    
+
+
     # print statistics
     game.print_game_statistics()
-    
+
     # Save game
     save_game(saved_session_path, game)
-    
+
     input("hit ENTER to exit")
-    
+
 
 if __name__ == "__main__":
     init(convert=True) # For color purpose
-    
+
     main(args=sys.argv[1:])
-        
-        
+
+
