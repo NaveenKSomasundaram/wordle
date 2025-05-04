@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import sys, os
 import math, random
-from colorama import Fore, Style, init
 import pickle
+
+from colorama import init
+
 class Game:
     def __init__(self, fpath:str = "word_list.txt", gamelevel = 'normal', showAlphabet = False, countWrongGuess = False):
         self.score = 0
