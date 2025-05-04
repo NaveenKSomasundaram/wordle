@@ -42,7 +42,7 @@ class Game:
         """
         row_width = 100
         print("")
-        game.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
+        self.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
         print("")
         print(''.center(row_width, '-'))
         print("Guess the Word in " + str(self.guess_limit) + " tries.")
@@ -362,11 +362,10 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
  
-if __name__ == "__main__":
-    init(convert=True) # For color purpose
-    
-    # Argument parse
-    args = sys.argv[1:]
+def main(args):
+    """
+    Run game session
+    """
     showAlphabet = False
 
     if '-k' in args:
@@ -388,7 +387,6 @@ if __name__ == "__main__":
     # TODO: Hard mode implementation - Not needed
     # TODO: User registration - replaced with load state
     
-      
     continueRound = 'y'
     while(continueRound.lower() == 'y'):
         game.run_round()
@@ -404,5 +402,14 @@ if __name__ == "__main__":
     save_game(savedfPath, game)
     
     input("hit ENTER to exit")
+    
+
+if __name__ == "__main__":
+    init(convert=True) # For color purpose
+    
+    # Argument parse
+    args = sys.argv[1:]
+    
+    main(args)
         
         
