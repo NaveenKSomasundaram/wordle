@@ -226,8 +226,8 @@ class Game:
             return random.choice(["Excellent!", "Superb!", "Impeccable!", "G3N1U5"])
         if num_guesses == [4, 5]:
             return random.choice(["Way to go!", "Good job!", "Impressive"])
-        else:
-            return random.choice(["Phew!", ":)", "You made it!", "Living dangerously?!"])
+       
+        return random.choice(["Phew!", ":)", "You made it!", "Living dangerously?!"])
     
     def run_round(self):
         """
@@ -245,7 +245,7 @@ class Game:
         alphabet_status = [0] * 26
         status = self.check_word(curr_guess, curr_word)
         
-        print('\nROUND #{}'.format(self.completed_rounds + 1))
+        print(f'\nROUND #{self.completed_rounds + 1}')
         
         # Get guesses from user
         # i is the guess number
@@ -308,12 +308,12 @@ class Game:
         self.completed_rounds += 1
         return
       
-def load_game(relPath):
+def load_game(rel_path):
     base_path = os.getenv('APPDATA')
-    fPath = os.path.join(base_path, relPath)
+    file_path = os.path.join(base_path, rel_path)
     
-    if os.path.exists(fPath):
-        with open(fPath , 'rb') as f:
+    if os.path.exists(file_path):
+        with open(file_path , 'rb') as f:
             game, meta_data = pickle.load(f)
             if not isinstance(game, Game):
                 game = None
@@ -324,7 +324,7 @@ def load_game(relPath):
                 if inp == 'n':
                     # Replace session data 
                     game = None
-                    with open(fPath, 'wb') as f:
+                    with open(file_path, 'wb') as f:
                         pickle.dump([game, "Empty Session File"], f, protocol=2)
     else:
         game = None
