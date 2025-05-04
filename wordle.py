@@ -1,12 +1,14 @@
 #!/usr/bin/env python
-import sys, os
-import math, random
+import sys
+import os
+import math
+import random
 import pickle
 
 from colorama import init
 
 class Game:
-    def __init__(self, fpath:str = "word_list.txt", gamelevel = 'normal', showAlphabet = False, countWrongGuess = False):
+    def __init__(self, fpath:str = "word_list.txt", gamelevel = 'normal', show_alphabet = False, count_wrong_guess = False):
         self.score = 0
         self.word_list = self.load_words(resource_path(fpath))
         self.unused_words = list(range(len(self.word_list))) 
@@ -28,8 +30,8 @@ class Game:
         self.streak['best'] = 0
         
         self.game_settings = {}
-        self.game_settings['show_alphabet'] = showAlphabet
-        self.game_settings['countWrongGuess'] = countWrongGuess
+        self.game_settings['show_alphabet'] = show_alphabet
+        self.game_settings['countWrongGuess'] = count_wrong_guess
         self.game_settings['level'] = 'normal' # hard or normal
         
         self.version = 0.0
@@ -38,11 +40,11 @@ class Game:
         """
         print_game_intro() displays game introduction and help
         """
-        rowWidth = 100
+        row_width = 100
         print("")
         game.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
         print("")
-        print(''.center(rowWidth, '-'))
+        print(''.center(row_width, '-'))
         print("Guess the Word in " + str(self.guess_limit) + " tries.")
         print(" - Each guess must be a valid 5-letter word.") 
         print(" - Color of guess tiles will change to show how close the guess is to the word.") 
@@ -59,13 +61,13 @@ class Game:
         print("a b c d e f g h   j k [l] m n o [p] q r  t u v w x y z")
         print("i and s are removed as they are not present in word")
         print("l and p are shown in [] as they are present in word")
-        print(''.center(rowWidth, '-'))
+        print(''.center(row_width, '-'))
         
     def print_game_statistics(self):
     
         # Some print settings
-        colWidth = 10 
-        tableWidth =  (colWidth * 3) + 5
+        col_width = 10 
+        tableWidth =  (col_width * 3) + 5
         
         print('') 
         print('GAME STATISTICS'.center(tableWidth, '*'))
@@ -80,9 +82,9 @@ class Game:
                 min_max_guess = i
         
         
-        print('Played'.center(colWidth) + 'Win %'.center(colWidth) +  'Max Streak'.center(colWidth))
+        print('Played'.center(col_width) + 'Win %'.center(col_width) +  'Max Streak'.center(col_width))
         win_percentage = math.ceil(100 * (rounds_won / rounds_played))
-        print(str(rounds_played).center(colWidth) + str(win_percentage).center(colWidth) + str(self.streak['best']).center(colWidth))
+        print(str(rounds_played).center(col_width) + str(win_percentage).center(col_width) + str(self.streak['best']).center(col_width))
         
         print('')
         print('Guess Distribution'.center(tableWidth))
