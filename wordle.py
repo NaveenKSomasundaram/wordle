@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+Wordle game class and helper methods.
+"""
 import sys
 import os
 import math
@@ -8,6 +11,9 @@ import pickle
 from colorama import init
 
 class Game:
+    """
+    Wordle game
+    """
     def __init__(self, fpath:str = "word_list.txt",
                  gamelevel = 'normal',
                  show_alphabet = False,
@@ -313,6 +319,9 @@ class Game:
         self.completed_rounds += 1
 
 def load_game(rel_path):
+    """
+    Load saved session of game from rel_path.
+    """
     base_path = os.getenv('APPDATA')
     file_path = os.path.join(base_path, rel_path)
 
@@ -335,6 +344,9 @@ def load_game(rel_path):
     return game
 
 def save_game(file_path , game):
+    """
+    Save session
+    """
     # Do not save if user doesn't want to
     inp = ''
     while(inp not in ['y', 'n']):
@@ -389,13 +401,12 @@ def main(args):
     game.game_settings['show_alphabet'] = show_alphabet
     game.print_game_intro()
 
-    contunue_round = 'y'
-    while(contunue_round.lower() == 'y'):
+    continue_round = 'y'
+    while continue_round.lower() == 'y':
         game.run_round()
-        contunue_round = ''
-        while(contunue_round not in ['y', 'n']):
-            contunue_round = input("Continue? (y/n) ")
-
+        continue_round = ''
+        while(continue_round not in ['y', 'n']):
+            continue_round = input("Continue? (y/n) ")
 
     # print statistics
     game.print_game_statistics()
@@ -410,5 +421,3 @@ if __name__ == "__main__":
     init(convert=True) # For color purpose
 
     main(args=sys.argv[1:])
-
-
