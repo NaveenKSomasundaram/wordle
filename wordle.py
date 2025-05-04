@@ -348,9 +348,11 @@ def save_game(file_path , game):
     Save session
     """
     # Do not save if user doesn't want to
-    inp = ''
-    while(inp not in ['y', 'n']):
+    while True:
         inp = input("Save current session? (y/n) ").lower()
+        if inp in ['y', 'n']:
+            break
+
     if inp == 'n':
         return
 
