@@ -129,18 +129,17 @@ class Game:
             print("Word list is empty!")
             sys.exit()
 
-        # TODO: check of words
-        checked_words = []
-        for w in words:
-            if w.isalpha():
-                if checked_words:
-                    if len(checked_words[0]) == len(w):
-                        checked_words.append(w)
-                else:
-                    checked_words.append(w)
+        #Filter to pure alphabet words
+        checked_words = [w for w in words if w.isalpha()]
 
+        if len(words) == 0:
+            print("Word list does not contain any valid words(alphabets)!")
+            sys.exit()
 
-        return words
+        # Ensure all words are of same length
+        checked_words = [w for w in checked_words if len(w) == len(checked_words[0])]
+
+        return checked_words
 
     @staticmethod
     def check_word(guess, curr_word):
