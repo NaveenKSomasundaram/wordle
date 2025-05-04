@@ -64,7 +64,9 @@ class Game:
         print(''.center(row_width, '-'))
         
     def print_game_statistics(self):
-    
+        """
+        Print game statistics.
+        """
         # Some print settings
         col_width = 10 
         table_width =  (col_width * 3) + 5
@@ -98,7 +100,6 @@ class Game:
             print(row_label + bar_color +  ' '  * num_bars  + self.colors['default']  + str(self.guess_statistics[i]))
         
         print(''.center(table_width, '*'))        
-        return
           
     @staticmethod    
     def load_words(fpath):
@@ -188,7 +189,8 @@ class Game:
             else:
                 print(self.colors['no_match'] + ' ' + letter + ' ' + self.colors['default'], end = "") 
         print(" ", end = "")   
-        return
+        
+
     
     def print_alphabet_status(self, status):
         """
@@ -306,7 +308,6 @@ class Game:
         
         # Update rounds counter
         self.completed_rounds += 1
-        return
       
 def load_game(rel_path):
     base_path = os.getenv('APPDATA')
@@ -330,7 +331,7 @@ def load_game(rel_path):
         game = None
     return game 
  
-def save_game(fPath, game):
+def save_game(file_path , game):
     # Do not save if user doesn't want to
     inp = ''
     while(inp not in ['y', 'n']):
@@ -339,9 +340,9 @@ def save_game(fPath, game):
         return
         
     base_path = os.getenv('APPDATA')
-    fPath = os.path.join(base_path, fPath)
+    file_path = os.path.join(base_path, file_path)
     try:
-        with open(fPath, 'wb') as f:
+        with open(file_path, 'wb') as f:
             meta_data = {}
             meta_data['game_version'] = game.version
         
@@ -366,20 +367,20 @@ def main(args):
     """
     Run game session
     """
-    showAlphabet = False
+    show_alphabet = False
 
     if '-k' in args:
-        showAlphabet = True 
+        show_alphabet = True 
 
     # Load previous state if possible
-    savedfPath = 'wordle_session.dat'
-    game = load_game(savedfPath)
+    saved_session_path = 'wordle_session.dat'
+    game = load_game(saved_session_path)
     
-    if game == None:
-        game = Game(show_alphabet = showAlphabet)
+    if game is None:
+        game = Game(show_alphabet = show_alphabet)
     
     # Use current settings on the saved state
-    game.game_settings['show_alphabet'] = showAlphabet
+    game.game_settings['show_alphabet'] = show_alphabet
     game.print_game_intro()
 
     # TODO: Build handling of command arguments
@@ -387,19 +388,19 @@ def main(args):
     # TODO: Hard mode implementation - Not needed
     # TODO: User registration - replaced with load state
     
-    continueRound = 'y'
-    while(continueRound.lower() == 'y'):
+    contunue_round = 'y'
+    while(contunue_round.lower() == 'y'):
         game.run_round()
-        continueRound = ''
-        while(continueRound not in ['y', 'n']):
-            continueRound = input("Continue? (y/n) ")
+        contunue_round = ''
+        while(contunue_round not in ['y', 'n']):
+            contunue_round = input("Continue? (y/n) ")
         
     
     # print statistics
     game.print_game_statistics()
     
     # Save game
-    save_game(savedfPath, game)
+    save_game(saved_session_path, game)
     
     input("hit ENTER to exit")
     
@@ -407,9 +408,6 @@ def main(args):
 if __name__ == "__main__":
     init(convert=True) # For color purpose
     
-    # Argument parse
-    args = sys.argv[1:]
-    
-    main(args)
+    main(args=sys.argv[1:])
         
         
