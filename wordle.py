@@ -54,23 +54,28 @@ class Game:
         print("")
         self.print_wordle('WORDLE', [1, 0, -1, 1, -1, -1])
         print("")
-        print(''.center(row_width, '-'))
-        print("Guess the Word in " + str(self.guess_limit) + " tries.")
-        print(" - Each guess must be a valid 5-letter word.")
-        print(" - Color of guess tiles will change to show how close the guess is to the word.")
+
+        game_info = (f"{''.center(row_width, '-')}\n"
+                     f"Guess the Word in {str(self.guess_limit)} tries.\n"
+                     " - Each guess must be a valid 5-letter word\n"
+                     " - Color of guess tiles will change to show how close the guess is to the word."
+                    )
+        print(game_info.strip())
 
         print("Example ")
         print("If word is PLANE and guess is SPADE then it appears as")
         self.print_wordle("SPADE", [-1, 0, 1, -1, 1])
         print("")
-        print("A and E are in the right position, P is in word but in the wrong position")
-        print("")
-        print("Use command line argument -k to display keyboard")
-        print("Example ")
-        print("If word is PLANE and guess is PILLS the keyboard shows")
-        print("a b c d e f g h   j k [l] m n o [p] q r  t u v w x y z")
-        print("i and s are removed as they are not present in word")
-        print("l and p are shown in [] as they are present in word")
+        keyboard_info = ("Use command-line argument -k to display the keyboard."
+                         "Example:\n"
+                         "If the word is PLANE and the guess is PILLS, the keyboard shows:\n"
+                         "a b c d e f g h   j k [l] m n o [p] q r  t u v w x y z\n"
+                         "i and s are removed as they are not present in the word.\n"
+                         "l and p are shown in [] as they are present in the word."
+                         )
+
+        print(keyboard_info.strip())
+
         print(''.center(row_width, '-'))
 
     def print_game_statistics(self):
@@ -411,7 +416,6 @@ def main(args):
     save_game(saved_session_path, game)
 
     input("hit ENTER to exit")
-
 
 if __name__ == "__main__":
     init(convert=True) # For color purpose
