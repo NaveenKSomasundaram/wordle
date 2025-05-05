@@ -112,6 +112,9 @@ class Game:
 
     @staticmethod
     def load_words(fpath):
+        """
+        Load words from file.
+        """
         if not os.path.isfile(fpath):
             print('Error. Provide a valid file path for word list.')
             sys.exit()
