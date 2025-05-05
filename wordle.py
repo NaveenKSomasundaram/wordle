@@ -192,14 +192,13 @@ class Game:
         Function to print word in the wordle format where the letter color is determined by status.
         """
         word = word.upper()
+        color_map = {0: self.colors['match'], 1: self.colors['exact_match'], -1: self.colors['no_match']}
+
         for i, letter in enumerate(word):
-            if status[i] == 0:
-                print(self.colors['match'] + ' ' + letter + ' ' + self.colors['default'], end = "")
-            elif status[i] == 1:
-                print(self.colors['exact_match'] + ' ' + letter + ' ' + self.colors['default'], end = "")
-            else:
-                print(self.colors['no_match'] + ' ' + letter + ' ' + self.colors['default'], end = "")
-        print(" ", end = "")
+            print(f"{color_map.get(status[i], self.colors['default'])} {letter} {self.colors['default']}", end="")
+        print(" ", end="")
+
+
 
 
 
