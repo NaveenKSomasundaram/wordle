@@ -8,6 +8,7 @@ import math
 import random
 import pickle
 
+from collections import Counter
 from colorama import init
 
 class Game:
@@ -166,24 +167,22 @@ class Game:
 
         n = len(curr_word)
 
+        # Initialize status list with -1 (no match)
         status = [-1] * n
+        letter_counts = Counter(curr_word)
+
+        # Find exact matches
         for i in range(n):
-            if curr_word[i] == guess[i]:
+            if guess[i] == curr_word[i]:
                 status[i] = 1
+                # Decrease counter of the letter
+                letter_counts[guess[i]] -= 1
 
+        # Find present but misplaced
         for i in range(n):
-            # Skip if letter is already found
-            if status[i] == 1:
-                continue
-
-            for j in range(n):
-                # Skip if letter is already used
-                if status[j] != -1:
-                    continue
-                # Set to 0 if letter found in guess
-                if curr_word[i] == guess[j]:
-                    status[j] = 0
-                    break
+            if status[i] != 1 and letter_counts[guess[i]] > 0:
+                status[i] = 0
+                letter_counts[guess[i]] -= 1
 
         return status
 
@@ -197,10 +196,6 @@ class Game:
         for i, letter in enumerate(word):
             print(f"{color_map.get(status[i], self.colors['default'])} {letter} {self.colors['default']}", end="")
         print(" ", end="")
-
-
-
-
 
     def print_alphabet_status(self, status):
         """
@@ -289,8 +284,6 @@ class Game:
             for jj in range(len(status)):
                 if (alphabet_status[ord(curr_guess[jj]) - ord('a')]) != 1:
                     alphabet_status[ord(curr_guess[jj]) - ord('a')] = -1 if status[jj] == -1 else 1
-
-
 
             # Store guess in guesses
             guesses.append(curr_guess)
