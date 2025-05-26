@@ -58,7 +58,8 @@ class Game:
         game_info = (f"{''.center(row_width, '-')}\n"
                      f"Guess the Word in {str(self.guess_limit)} tries.\n"
                      " - Each guess must be a valid 5-letter word\n"
-                     " - Color of guess tiles will change to show how close the guess is to the word."
+                     " - Color of guess tiles will change to show "
+                     "how close the guess is to the word."
                     )
         print(game_info.strip())
 
@@ -216,10 +217,14 @@ class Game:
         for i in range(len(status)):
             # not guesed show lowercase
             if status[i] == 0:
-                print(self.colors['default'] + ' ' + chr(i + 97) + ' ' + self.colors['default'], end = "")
+                print(self.colors['default'] +\
+                      ' ' + chr(i + 97) + ' ' +\
+                      self.colors['default'], end = "")
             # gussed and present in word - show lowercase within []
             elif status[i] == 1:
-                print(self.colors['default'] + '[' + chr(i + 97) + ']' + self.colors['default'], end = "")
+                print(self.colors['default'] +\
+                      '[' + chr(i + 97) + ']' +\
+                      self.colors['default'], end = "")
             # guessed and not present - don't show letter
             else:
                 print(self.colors['default'] + '   ' + self.colors['default'], end = "")
@@ -420,4 +425,8 @@ def main(args):
 if __name__ == "__main__":
     init(convert=True) # For color purpose
 
+    if 'VIRTUAL_ENV' in os.environ:
+        print("Inside venv")
+    else:
+        print("Not in venv")
     main(args=sys.argv[1:])
