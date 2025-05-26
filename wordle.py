@@ -214,21 +214,18 @@ class Game:
         """
         if not self.game_settings['show_alphabet']:
             return
+        keyboard_str = ""
         for i in range(len(status)):
             # not guesed show lowercase
             if status[i] == 0:
-                print(self.colors['default'] +\
-                      ' ' + chr(i + 97) + ' ' +\
-                      self.colors['default'], end = "")
+                keyboard_str += ' ' + chr(i + 97) + ' '
             # gussed and present in word - show lowercase within []
             elif status[i] == 1:
-                print(self.colors['default'] +\
-                      '[' + chr(i + 97) + ']' +\
-                      self.colors['default'], end = "")
+                keyboard_str += '[' + chr(i + 97) + ']'
             # guessed and not present - don't show letter
             else:
-                print(self.colors['default'] + '   ' + self.colors['default'], end = "")
-        print(self.colors['default'] + "  ", end = "")
+                keyboard_str += '   '
+        print(self.colors['default'] + keyboard_str + "  ", end = "")
         return
 
     def round_end_message(self, num_guesses):
